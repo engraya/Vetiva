@@ -1,0 +1,28 @@
+# Built inside the image — never copy a stale local build in.
+node_modules
+dist
+
+.git
+.github
+.husky
+.vscode
+.claude
+
+# Test artifacts
+playwright-report
+test-results
+coverage
+
+docs
+*.md
+.env
+.env.*
+*.local
+
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# NOTE: e2e/, playwright.config.ts, and vite.config.ts must stay in the
+# build context — `pnpm build` runs `tsc -b`, and tsconfig.node.json
+# compiles all three.

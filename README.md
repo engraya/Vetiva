@@ -52,6 +52,23 @@ pnpm dev          # http://localhost:5173 — MSW serves the API, no backend nee
 | `pnpm lint` / `pnpm format` / `pnpm typecheck` | Quality gates (also run via Husky + lint-staged)                        |
 | `node scripts/screenshots.mjs <outDir>`        | Capture full-page screenshots of every key screen (dev server on :5199) |
 
+## Docker
+
+The app ships as a fully self-contained image — MSW is the backend, so nginx serving the
+static build is the whole deployment.
+
+```bash
+docker build -t vetiva-ipo-web .
+docker run --rm -p 8080:80 vetiva-ipo-web   # http://localhost:8080
+# or
+docker compose up --build
+```
+
+CI (GitHub Actions, [.github/workflows/ci.yml](.github/workflows/ci.yml)) runs on every push
+to `main` and every PR: lint, format check, typecheck, unit tests, production build, Playwright
+e2e, and a Docker image build with an nginx smoke test. The image is build-verified only — it
+is not pushed to a registry.
+
 ## Architecture notes
 
 - **Feature-first layout** under `src/features/*` (auth, offer, subscription, profile, demo),
