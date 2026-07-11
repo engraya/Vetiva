@@ -97,8 +97,18 @@ jobs:
 
       - name: Smoke test image
         run: |
-          docker run -d --rm -p 8080:80 --name smoke vetiva-ipo-web:ci
-          curl -fsS --retry 5 --retry-connrefused http://localhost:8080/ | grep -q '<div id="root">'
+          docker run -d -p 8080:80 --name smoke vetiva-ipo-web:ci
+          # Wait for nginx: right after `docker run -d` the port proxy resets
+          # connections (curl exit 56), which --retry-connrefused won't retry.
+          curl -fsS --retry 10 --retry-delay 1 --retry-all-errors -o /dev/null http://localhost:8080/
+          curl -fsS http://localhost:8080/ | grep -q '<div id="root">'
           curl -fsSI http://localhost:8080/mockServiceWorker.js | grep -qi 'content-type:.*javascript'
           curl -fsS -o /dev/null http://localhost:8080/dashboard
-          docker stop smoke
+
+      - name: Show container logs
+        if: failure()
+        run: docker logs smoke || true
+
+      - name: Clean up container
+        if: always()
+        run: docker rm -f smoke || true
