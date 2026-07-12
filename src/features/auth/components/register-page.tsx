@@ -1,16 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { StepIndicator } from '@/components/common/step-indicator';
+import { TopNav } from '@/components/common/top-nav';
 import { PageTransition } from '@/components/common/page-transition';
 import { useRegisterStore } from '@/features/auth/register-store';
 import { BvnStep } from './register-steps/bvn-step';
 import { ConfirmStep } from './register-steps/confirm-step';
 import { VerifyStep } from './register-steps/verify-step';
 
-const STEPS = ['Identity', 'Confirm', 'Secure'] as const;
 type StepKey = 'bvn' | 'confirm' | 'verify';
-
-const STEP_INDEX: Record<StepKey, number> = { bvn: 0, confirm: 1, verify: 2 };
 
 export function RegisterPage() {
   const [params, setParams] = useSearchParams();
@@ -31,14 +28,23 @@ export function RegisterPage() {
     setParams({ step: next });
   }
 
+  function backFrom(current: StepKey) {
+    if (current === 'bvn') navigate('/');
+    else if (current === 'confirm') goTo('bvn');
+    else goTo('confirm');
+  }
+
   return (
     <PageTransition>
-      <StepIndicator steps={STEPS} current={STEP_INDEX[step]} className="mb-8" />
+      <TopNav title="Create account" onBack={() => backFrom(step)} className="mb-2" />
       {step === 'bvn' && <BvnStep onDone={() => goTo('confirm')} />}
       {step === 'confirm' && (
         <ConfirmStep onBack={() => goTo('bvn')} onDone={() => goTo('verify')} />
       )}
-      {step === 'verify' && <VerifyStep onDone={() => navigate('/dashboard', { replace: true })} />}
+      {step === 'verify' && (
+        // Approved flow: registration lands on the Offers page
+        <VerifyStep onDone={() => navigate('/offers', { replace: true })} />
+      )}
     </PageTransition>
   );
 }

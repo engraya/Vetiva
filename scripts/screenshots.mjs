@@ -45,6 +45,23 @@ function seed(offerStatus, subscribed, authenticated) {
           },
         ]
       : [],
+    txns: subscribed
+      ? [
+          { id: 'txn-3', label: 'DPRP IPO top-up', amount: 122750, when: '9 Jul 2026 [DEMO]' },
+          {
+            id: 'txn-2',
+            label: 'DPRP IPO subscription — Chidi Okafor',
+            amount: 122750,
+            when: '8 Jul 2026 [DEMO]',
+          },
+          {
+            id: 'txn-1',
+            label: 'DPRP IPO subscription',
+            amount: 122750,
+            when: '8 Jul 2026 [DEMO]',
+          },
+        ]
+      : [],
   };
   const auth = authenticated
     ? { state: { token: 'demo-token-vetiva', user: DEMO_USER, isAuthenticated: true }, version: 0 }
@@ -76,25 +93,29 @@ async function shot(
     },
     [db, auth],
   );
-  await page.goto(BASE + path);
-  await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(700);
+  await page.goto(BASE + path, { waitUntil: 'domcontentloaded' });
+  // Fixed settle time — remote [DEMO] slider imagery keeps networkidle busy
+  await page.waitForTimeout(1800);
   await page.screenshot({ path: `${OUT}/${name}.png`, fullPage });
   await ctx.close();
   console.log('done:', name);
 }
 
-await shot('01-landing', '/', { authenticated: false });
+await shot('01-entry', '/', { authenticated: false });
 await shot('02-login', '/auth/login', { authenticated: false });
 await shot('03-register-bvn', '/auth/register', { authenticated: false });
-await shot('04-dashboard-live-empty', '/dashboard');
-await shot('05-dashboard-subscribed', '/dashboard', { subscribed: true });
-await shot('06-dashboard-prelive', '/dashboard', { offerStatus: 'upcoming' });
-await shot('07-subscribe', '/subscribe');
-await shot('08-subscribe-minor', '/subscribe?for=minor');
-await shot('09-topup', '/top-up/sub-self', { subscribed: true });
-await shot('10-profile', '/profile');
-await shot('11-dashboard-mobile', '/dashboard', { subscribed: true, width: 390, height: 844 });
-await shot('12-subscribe-mobile', '/subscribe', { width: 390, height: 844 });
+await shot('04-home', '/dashboard', { subscribed: true });
+await shot('05-offers-live-fresh', '/offers');
+await shot('06-offers-prelive', '/offers', { offerStatus: 'upcoming' });
+await shot('07-offers-subscribed', '/offers', { subscribed: true });
+await shot('08-offers-history', '/offers?tab=history', { subscribed: true });
+await shot('09-subscribe', '/subscribe');
+await shot('10-subscribe-minor', '/subscribe?for=minor');
+await shot('11-topup', '/top-up/sub-self', { subscribed: true });
+await shot('12-wallet', '/wallet', { subscribed: true });
+await shot('13-portfolio', '/portfolio', { subscribed: true });
+await shot('14-products', '/products');
+await shot('15-profile', '/profile');
+await shot('16-home-mobile', '/dashboard', { subscribed: true, width: 390, height: 844 });
 
 await browser.close();

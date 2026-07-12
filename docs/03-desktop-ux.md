@@ -1,5 +1,11 @@
 # 03 — Desktop UX Proposal & UX Analysis (Phases D + UX/A11y)
 
+> **Superseded in part by the approved web flow** (`web.html`), which is the implementation's
+> source of truth: white portal shell, auth image-slider card, five-section dashboard
+> (Home / Wallet / Offers / Products / Portfolio), and a single-column 720px subscribe
+> one-pager with a sticky footbar. See doc 04 for the final IA. The accessibility guidance
+> below still applies unchanged.
+
 ## 1. Why each screen exists
 
 | Screen                 | Job to be done                                                                           | Key friction removed                                                |

@@ -1,4 +1,4 @@
-import type { OfferStatus, Subscription, User } from '@/types/domain';
+import type { OfferStatus, Subscription, Transaction, User } from '@/types/domain';
 
 /**
  * Seedable in-memory database backing the MSW handlers.
@@ -13,6 +13,7 @@ export interface DemoDb {
   offerStatus: OfferStatus;
   waitlisted: boolean;
   subscriptions: Subscription[];
+  txns: Transaction[];
 }
 
 const STORAGE_KEY = 'vetiva-demo-db';
@@ -46,6 +47,7 @@ function defaultDb(): DemoDb {
     offerStatus: 'live',
     waitlisted: false,
     subscriptions: [],
+    txns: [],
   };
 }
 
@@ -110,6 +112,21 @@ export function seedScenario(scenario: DemoScenario): void {
           shares: 500,
           amountPaid: 500 * 245.5,
           payments: 1,
+        },
+      ];
+      db.txns = [
+        { id: 'txn-3', label: 'DPRP IPO top-up', amount: 500 * 245.5, when: '9 Jul 2026 [DEMO]' },
+        {
+          id: 'txn-2',
+          label: 'DPRP IPO subscription — Chidi Okafor',
+          amount: 500 * 245.5,
+          when: '8 Jul 2026 [DEMO]',
+        },
+        {
+          id: 'txn-1',
+          label: 'DPRP IPO subscription',
+          amount: 500 * 245.5,
+          when: '8 Jul 2026 [DEMO]',
         },
       ];
       break;

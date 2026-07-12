@@ -30,6 +30,5 @@ export type VerifyValues = z.infer<typeof verifySchema>;
 export const loginSchema = z.object({
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(1, 'Enter your password'),
-  biometric: z.boolean(),
 });
 export type LoginValues = z.infer<typeof loginSchema>;

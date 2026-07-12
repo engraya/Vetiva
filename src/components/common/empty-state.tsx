@@ -1,31 +1,22 @@
 import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
-  icon?: React.ReactNode;
-  title: string;
-  description?: string;
+  /** Emoji glyph, per the approved flow's empty boxes */
+  icon: string;
+  children: React.ReactNode;
   action?: React.ReactNode;
   className?: string;
 }
 
-export function EmptyState({ icon, title, description, action, className }: EmptyStateProps) {
+/** The approved flow's `emptybox`: centered, muted, big emoji. */
+export function EmptyState({ icon, children, action, className }: EmptyStateProps) {
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center justify-center rounded-card border border-dashed border-line bg-card/60 px-6 py-10 text-center',
-        className,
-      )}
-    >
-      {icon && (
-        <div className="mb-3 text-olive-deep" aria-hidden>
-          {icon}
-        </div>
-      )}
-      <h3 className="text-sm font-bold text-ink">{title}</h3>
-      {description && (
-        <p className="mt-1 max-w-sm text-[13px] leading-relaxed text-muted">{description}</p>
-      )}
-      {action && <div className="mt-4">{action}</div>}
+    <div className={cn('px-5 py-[60px] text-center text-sm leading-relaxed text-muted', className)}>
+      <div className="mb-2.5 text-[2.2rem]" aria-hidden>
+        {icon}
+      </div>
+      {children}
+      {action && <div className="mt-4 flex justify-center">{action}</div>}
     </div>
   );
 }

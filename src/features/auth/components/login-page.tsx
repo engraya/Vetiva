@@ -5,13 +5,21 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
-import { CheckboxLine } from '@/components/ui/checkbox';
-import { DemoTag } from '@/components/common/demo-tag';
 import { PageTransition } from '@/components/common/page-transition';
 import { useLogin } from '@/features/auth/api';
 import { loginSchema, type LoginValues } from '@/features/auth/schemas';
-import { apiErrorMessage } from '@/lib/axios';
+import { api, apiErrorMessage } from '@/lib/axios';
 import { DEMO_USER } from '@/mocks/db';
+import type { Subscription } from '@/types/domain';
+
+function RequiredMark() {
+  return (
+    <span className="text-bad" aria-hidden>
+      {' '}
+      *
+    </span>
+  );
+}
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -20,15 +28,27 @@ export function LoginPage() {
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: DEMO_USER.email, password: 'Demo1234', biometric: true },
+    defaultValues: { email: DEMO_USER.email, password: 'Demo1234' },
   });
 
   function onSubmit(values: LoginValues) {
     login.mutate(values, {
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success('Logged in');
         const from = (location.state as { from?: string } | null)?.from;
-        navigate(from ?? '/dashboard', { replace: true });
+        if (from) {
+          navigate(from, { replace: true });
+          return;
+        }
+        // Approved flow: land on Home when there's a position, else on Offers
+        let hasPosition = false;
+        try {
+          const { data } = await api.get<Subscription[]>('/subscriptions');
+          hasPosition = data.length > 0;
+        } catch {
+          // fall through to Offers
+        }
+        navigate(hasPosition ? '/dashboard' : '/offers', { replace: true });
       },
       onError: (error) => toast.error(apiErrorMessage(error)),
     });
@@ -36,16 +56,24 @@ export function LoginPage() {
 
   return (
     <PageTransition>
-      <h1 className="text-[26px] font-bold tracking-[-0.025em] text-ink">Welcome back</h1>
-      <p className="mt-1.5 text-[15px] text-muted">Log in to continue.</p>
+      <h1 className="text-[32px] font-bold tracking-[-0.025em] text-ink">Welcome Back</h1>
 
       <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
-        <Field label="Email" error={form.formState.errors.email?.message}>
+        <Field
+          label={
+            <>
+              Email
+              <RequiredMark />
+            </>
+          }
+          error={form.formState.errors.email?.message}
+        >
           {({ inputId, describedBy }) => (
             <Input
               id={inputId}
               type="email"
               autoComplete="email"
+              placeholder="Enter your email address"
               aria-describedby={describedBy}
               invalid={!!form.formState.errors.email}
               {...form.register('email')}
@@ -53,11 +81,20 @@ export function LoginPage() {
           )}
         </Field>
 
-        <Field label="Password" error={form.formState.errors.password?.message}>
+        <Field
+          label={
+            <>
+              Password
+              <RequiredMark />
+            </>
+          }
+          error={form.formState.errors.password?.message}
+        >
           {({ inputId, describedBy }) => (
             <PasswordInput
               id={inputId}
               autoComplete="current-password"
+              placeholder="Enter your password"
               aria-describedby={describedBy}
               invalid={!!form.formState.errors.password}
               {...form.register('password')}
@@ -65,28 +102,32 @@ export function LoginPage() {
           )}
         </Field>
 
-        <CheckboxLine
-          label={
-            <>
-              Enable biometric unlock <DemoTag label="NICE-TO-HAVE" />
-            </>
-          }
-          {...form.register('biometric')}
-        />
+        <Button
+          type="button"
+          variant="link"
+          size="bare"
+          className="mt-3 font-bold"
+          onClick={() => toast('Password reset flow — out of scope for this demo')}
+        >
+          Forgot Password?
+        </Button>
 
-        <Button type="submit" size="lg" className="mt-7" loading={login.isPending}>
-          Log in
+        <Button type="submit" size="lg" className="mt-5" loading={login.isPending}>
+          Login
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-muted">
-        New to Vetiva?{' '}
-        <Link
-          to="/auth/register"
-          className="font-semibold text-olive-deep underline-offset-2 hover:underline"
-        >
+      <p className="mt-5 text-center text-sm text-muted">
+        Don't have an account?{' '}
+        <Link to="/" className="font-bold text-olive-deep underline-offset-2 hover:underline">
           Create an account
         </Link>
+      </p>
+
+      <p className="mt-6 text-center text-xs leading-relaxed text-muted">
+        © 2026 Vetiva Capital Management Limited
+        <br />
+        All Rights Reserved
       </p>
     </PageTransition>
   );

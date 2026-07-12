@@ -23,6 +23,7 @@ const buttonVariants = cva(
         soft: 'bg-olive-soft text-olive-deep hover:bg-olive-pale',
         link: 'bg-transparent text-olive-deep font-semibold hover:underline underline-offset-2 focus-visible:outline-olive',
         dark: 'bg-stage text-stage-ink border border-stage-line hover:bg-stage-card',
+        inverse: 'bg-white text-olive-deep hover:bg-white/90',
       },
       size: {
         lg: 'h-[54px] px-5 text-[15px] rounded-btn w-full',

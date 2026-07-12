@@ -3,10 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Vetiva IPO — desktop web platform for IPO subscriptions (Dangote Petroleum Refinery & Petrochemicals demo)",
+  "description": "Vetiva IPO \u2014 desktop web platform for IPO subscriptions (Dangote Petroleum Refinery & Petrochemicals demo)",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "node api.js && vite",
+    "build": "node api.js && tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",

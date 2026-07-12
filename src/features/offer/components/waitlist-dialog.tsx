@@ -31,9 +31,7 @@ export function WaitlistDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg" className="mt-4">
-          Join the waiting list
-        </Button>
+        <Button size="lg">Join the waiting list</Button>
       </DialogTrigger>
       <DialogContent
         title="Join the waiting list"
@@ -65,6 +63,14 @@ export function WaitlistDialog() {
         />
         <Button size="lg" className="mt-5" onClick={submit} loading={join.isPending}>
           Notify me
+        </Button>
+        <Button
+          variant="link"
+          size="bare"
+          className="mt-2 w-full justify-center"
+          onClick={() => setOpen(false)}
+        >
+          Cancel
         </Button>
       </DialogContent>
     </Dialog>

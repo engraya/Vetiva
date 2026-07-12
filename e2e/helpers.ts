@@ -43,6 +43,16 @@ export async function seedApp(
           },
         ]
       : [],
+    txns: subscribed
+      ? [
+          {
+            id: 'txn-1',
+            label: 'DPRP IPO subscription',
+            amount: 122750,
+            when: '8 Jul 2026 [DEMO]',
+          },
+        ]
+      : [],
   };
   const auth = authenticated
     ? { state: { token: 'demo-token-vetiva', user: DEMO_USER, isAuthenticated: true }, version: 0 }

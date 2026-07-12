@@ -62,7 +62,6 @@ export function WhoForSection({
 
   return (
     <Section
-      step={1}
       icon={<Users className="size-[18px]" aria-hidden />}
       title="Who is this subscription for?"
     >

@@ -1,34 +1,46 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Outlet } from 'react-router';
 import { AuthLayout } from '@/layouts/auth-layout';
 import { DashboardLayout } from '@/layouts/dashboard-layout';
+import { DemoPanel } from '@/features/demo/demo-panel';
 import { RouteErrorPage } from '@/pages/errors/route-error';
 import { NotFoundPage } from '@/pages/errors/not-found';
 import { MaintenancePage } from '@/pages/errors/maintenance';
 
+/** Mounts the presenter overlay on every screen, as in the approved flow. */
+function RootLayout() {
+  return (
+    <>
+      <Outlet />
+      <DemoPanel />
+    </>
+  );
+}
+
 export const router = createBrowserRouter([
   {
+    element: <RootLayout />,
     errorElement: <RouteErrorPage />,
     children: [
       {
-        index: true,
-        lazy: async () => {
-          const { LandingPage } = await import('@/features/auth/components/landing-page');
-          return { Component: LandingPage };
-        },
-      },
-      {
-        path: 'auth',
         element: <AuthLayout />,
         children: [
           {
-            path: 'login',
+            index: true,
+            lazy: async () => {
+              const { GetStartedPage } =
+                await import('@/features/auth/components/get-started-page');
+              return { Component: GetStartedPage };
+            },
+          },
+          {
+            path: 'auth/login',
             lazy: async () => {
               const { LoginPage } = await import('@/features/auth/components/login-page');
               return { Component: LoginPage };
             },
           },
           {
-            path: 'register',
+            path: 'auth/register',
             lazy: async () => {
               const { RegisterPage } = await import('@/features/auth/components/register-page');
               return { Component: RegisterPage };
@@ -42,8 +54,37 @@ export const router = createBrowserRouter([
           {
             path: 'dashboard',
             lazy: async () => {
-              const { DashboardPage } = await import('@/features/offer/components/dashboard-page');
-              return { Component: DashboardPage };
+              const { HomePage } = await import('@/features/home/components/home-page');
+              return { Component: HomePage };
+            },
+          },
+          {
+            path: 'offers',
+            lazy: async () => {
+              const { OffersPage } = await import('@/features/offer/components/offers-page');
+              return { Component: OffersPage };
+            },
+          },
+          {
+            path: 'wallet',
+            lazy: async () => {
+              const { WalletPage } = await import('@/features/wallet/components/wallet-page');
+              return { Component: WalletPage };
+            },
+          },
+          {
+            path: 'portfolio',
+            lazy: async () => {
+              const { PortfolioPage } =
+                await import('@/features/portfolio/components/portfolio-page');
+              return { Component: PortfolioPage };
+            },
+          },
+          {
+            path: 'products',
+            lazy: async () => {
+              const { ProductsPage } = await import('@/features/products/components/products-page');
+              return { Component: ProductsPage };
             },
           },
           {

@@ -62,7 +62,6 @@ export function DividendSection({ mode, user, onResolved }: DividendSectionProps
 
   return (
     <Section
-      step={4}
       icon={<PiggyBank className="size-[18px]" aria-hidden />}
       title="Bank account"
       description={

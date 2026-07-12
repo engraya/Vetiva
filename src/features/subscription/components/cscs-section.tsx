@@ -104,7 +104,6 @@ export function CscsSection({ mode, childName, childNin, userName, onResolved }:
 
   return (
     <Section
-      step={3}
       icon={<Landmark className="size-[18px]" aria-hidden />}
       title={
         isMinor

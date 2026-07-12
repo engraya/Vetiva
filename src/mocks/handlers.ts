@@ -73,6 +73,16 @@ function currentOffer(): Offer {
   };
 }
 
+function recordTxn(kind: 'subscription' | 'topup', sub: Subscription, total: number): void {
+  const holderSuffix = sub.holderType === 'minor' ? ` — ${sub.holderName}` : '';
+  db.txns.unshift({
+    id: `txn-${Date.now()}`,
+    label: `${OFFER_TICKER} IPO ${kind === 'topup' ? 'top-up' : 'subscription'}${holderSuffix}`,
+    amount: total,
+    when: `${formatDate(new Date().toISOString())} [DEMO]`,
+  });
+}
+
 function buildOrder(
   kind: Order['kind'],
   sub: Subscription,
@@ -304,8 +314,10 @@ export const handlers = [
       payments: 1,
     };
     db.subscriptions.push(sub);
+    const order = buildOrder('subscription', sub, body.shares, body.paymentMethodId);
+    recordTxn('subscription', sub, order.total);
     saveDb();
-    return HttpResponse.json(buildOrder('subscription', sub, body.shares, body.paymentMethodId));
+    return HttpResponse.json(order);
   }),
 
   http.post(`${API}/subscriptions/:id/top-up`, async ({ request, params }) => {
@@ -318,7 +330,15 @@ export const handlers = [
     sub.shares += body.shares;
     sub.amountPaid += body.shares * PRICE_PER_SHARE;
     sub.payments += 1;
+    const order = buildOrder('topup', sub, body.shares, body.paymentMethodId);
+    recordTxn('topup', sub, order.total);
     saveDb();
-    return HttpResponse.json(buildOrder('topup', sub, body.shares, body.paymentMethodId));
+    return HttpResponse.json(order);
+  }),
+
+  /* ---------------------------- transactions -------------------------- */
+  http.get(`${API}/transactions`, async () => {
+    await delay(350);
+    return HttpResponse.json(db.txns);
   }),
 ];

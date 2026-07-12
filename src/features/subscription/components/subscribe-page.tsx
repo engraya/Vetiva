@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { DemoTag } from '@/components/common/demo-tag';
+import { TopNav } from '@/components/common/top-nav';
 import { PageTransition } from '@/components/common/page-transition';
 import { useAuthStore } from '@/features/auth/store';
 import { useOffer } from '@/features/offer/api';
@@ -24,7 +25,8 @@ import { SharesSection } from './shares-section';
 import { CscsSection } from './cscs-section';
 import { DividendSection } from './dividend-section';
 import { PaymentMethodList } from './payment-method-list';
-import { OrderSummaryPanel } from './order-summary-panel';
+import { OrderReviewSection } from './order-review-section';
+import { StickyFootbar } from './sticky-footbar';
 import { ProcessingOverlay } from './processing-overlay';
 
 export function SubscribePage() {
@@ -48,6 +50,7 @@ export function SubscribePage() {
 
   const price = offer?.pricePerShare ?? PRICE_PER_SHARE;
   const selfSubscription = subscriptions?.find((s) => s.holderType === 'self');
+  const totals = calcTotals(method, shares, price);
 
   const missingRequirements = useMemo(() => {
     const missing: string[] = [];
@@ -89,110 +92,108 @@ export function SubscribePage() {
 
   return (
     <PageTransition>
-      {createSubscription.isPending && (
-        <ProcessingOverlay method={method} totals={calcTotals(method, shares, price)} />
-      )}
+      {createSubscription.isPending && <ProcessingOverlay method={method} totals={totals} />}
 
-      <h1 className="text-2xl font-bold tracking-[-0.025em] text-ink">Subscribe</h1>
+      <div className="flex min-h-full max-w-[720px] flex-col">
+        <TopNav title="Subscribe" onBack={() => navigate(-1)} />
 
-      <div className="mt-5 grid items-start gap-5 lg:grid-cols-12">
-        {/* Form column */}
-        <div className="space-y-4 lg:col-span-7">
-          {/* Offer strip */}
-          <Card className="flex items-center justify-between gap-4 p-4 md:p-4">
-            <div className="min-w-0">
-              <div className="text-sm font-bold text-ink">{offer?.name}</div>
-              <div className="mt-0.5 text-xs text-muted">
-                ({offer?.ticker}) · {ngn(price)}/share <DemoTag /> · closes 31 Jul
-              </div>
+        {/* Offer strip */}
+        <Card className="flex items-center justify-between gap-4 p-4 md:p-4">
+          <div className="min-w-0">
+            <div className="text-sm font-bold text-ink">{offer?.name}</div>
+            <div className="mt-0.5 text-xs text-muted">
+              ({offer?.ticker}) · {ngn(price)}/share <DemoTag /> · closes 31 Jul
             </div>
-            <Badge variant="live" pulse>
-              Live
-            </Badge>
-          </Card>
+          </div>
+          <Badge variant="live" pulse>
+            Live
+          </Badge>
+        </Card>
 
-          <WhoForSection
-            mode={mode}
-            onModeChange={setMode}
-            userName={user.name}
-            selfSubscription={selfSubscription}
-            child={child}
-            onChildChange={(c, nin) => {
-              setChild(c);
-              setChildNin(nin);
-            }}
-          />
+        <WhoForSection
+          mode={mode}
+          onModeChange={setMode}
+          userName={user.name}
+          selfSubscription={selfSubscription}
+          child={child}
+          onChildChange={(c, nin) => {
+            setChild(c);
+            setChildNin(nin);
+          }}
+        />
 
-          <SharesSection
-            step={2}
-            title="Number of shares"
-            value={shares}
-            floor={MIN_SHARES}
-            price={price}
-            showMinimum={MIN_SHARES}
-            onChange={setShares}
-          />
+        <SharesSection
+          title="Number of shares"
+          value={shares}
+          floor={MIN_SHARES}
+          price={price}
+          showMinimum={MIN_SHARES}
+          onChange={setShares}
+        />
 
-          <CscsSection
-            mode={mode}
-            childName={child?.name ?? null}
-            childNin={childNin}
-            userName={user.name}
-            onResolved={setCscs}
-          />
+        <CscsSection
+          mode={mode}
+          childName={child?.name ?? null}
+          childNin={childNin}
+          userName={user.name}
+          onResolved={setCscs}
+        />
 
-          <DividendSection mode={mode} user={user} onResolved={setDividend} />
+        <DividendSection mode={mode} user={user} onResolved={setDividend} />
 
-          {mode === 'self' && (
-            <Section
-              step={5}
-              icon={<Ticket className="size-[18px]" aria-hidden />}
-              title={
-                <>
-                  Invitation code <span className="font-semibold text-muted">(Optional)</span>
-                </>
-              }
-            >
-              <Input
-                className="mt-3"
-                placeholder="e.g. DPRP-AOK24"
-                aria-label="Invitation code"
-                value={invitationCode}
-                onChange={(e) => setInvitationCode(e.target.value)}
-              />
-            </Section>
-          )}
-
+        {mode === 'self' && (
           <Section
-            step={mode === 'self' ? 6 : 5}
-            icon={<CreditCard className="size-[18px]" aria-hidden />}
-            title="How would you like to pay?"
-            description="Fees are added on top of your subscription. The amount shown is the final total you'll pay."
+            icon={<Ticket className="size-[18px]" aria-hidden />}
+            title={
+              <>
+                Invitation code <span className="font-semibold text-muted">(Optional)</span>
+              </>
+            }
           >
-            <PaymentMethodList
-              shares={shares}
-              price={price}
-              selectedId={method.id}
-              onSelect={setMethod}
+            <Input
+              className="mt-2.5"
+              placeholder="e.g. DPRP-AOK24"
+              aria-label="Invitation code"
+              value={invitationCode}
+              onChange={(e) => setInvitationCode(e.target.value)}
             />
           </Section>
-        </div>
+        )}
 
-        {/* Sticky summary column */}
-        <div className="lg:col-span-5">
-          <OrderSummaryPanel
+        <Section
+          icon={<CreditCard className="size-[18px]" aria-hidden />}
+          title="How would you like to pay?"
+          description="Fees are added on top of your subscription. The amount shown is the final total you'll pay."
+        >
+          <PaymentMethodList
+            shares={shares}
+            price={price}
+            selectedId={method.id}
+            onSelect={setMethod}
+          />
+        </Section>
+
+        <div className="mt-6">
+          <OrderReviewSection
             kind="subscription"
             shares={shares}
             price={price}
             method={method}
+            totals={totals}
             acknowledged={acknowledged}
             onAcknowledge={setAcknowledged}
-            canSubmit={canSubmit}
-            submitting={createSubscription.isPending}
-            onSubmit={submit}
-            missingRequirements={missingRequirements}
           />
         </div>
+
+        <StickyFootbar
+          label="Subscription amount"
+          totals={totals}
+          submitLabel="Submit subscription"
+          canSubmit={canSubmit}
+          submitting={createSubscription.isPending}
+          onSubmit={submit}
+          missingRequirements={missingRequirements}
+        />
       </div>
     </PageTransition>
   );

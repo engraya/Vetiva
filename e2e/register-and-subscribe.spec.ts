@@ -5,10 +5,8 @@ test('new user registers and subscribes for themselves', async ({ page }) => {
   await seedApp(page, { authenticated: false });
   await page.goto('/');
 
-  // Landing
-  await expect(
-    page.getByRole('heading', { name: "Invest in Nigeria's biggest IPOs" }),
-  ).toBeVisible();
+  // Entry ("Get started")
+  await expect(page.getByRole('heading', { name: 'Get started' })).toBeVisible();
   await page.getByRole('link', { name: 'Create new account' }).click();
 
   // Step 1 — BVN
@@ -28,12 +26,13 @@ test('new user registers and subscribes for themselves', async ({ page }) => {
   await page.getByLabel('Re-enter password').fill('Demo1234');
   await page.getByRole('button', { name: 'Finish setup' }).click();
 
-  // Dashboard
-  await expect(page).toHaveURL(/\/dashboard/);
+  // Registration lands on the Offers page
+  await expect(page).toHaveURL(/\/offers/);
+  await expect(page.getByText('Explore. Invest. Own.')).toBeVisible();
   await expect(page.getByText('Dangote Petroleum Refinery & Petrochemicals')).toBeVisible();
 
   // Subscribe
-  await page.getByRole('link', { name: 'Subscribe now' }).first().click();
+  await page.getByRole('link', { name: 'Subscribe now' }).click();
   await expect(page).toHaveURL(/\/subscribe/);
 
   // CSCS via demo number

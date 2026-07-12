@@ -72,6 +72,13 @@ export interface Bank {
   name: string;
 }
 
+export interface Transaction {
+  id: string;
+  label: string;
+  amount: number;
+  when: string;
+}
+
 export interface Order {
   id: string;
   kind: 'subscription' | 'topup';

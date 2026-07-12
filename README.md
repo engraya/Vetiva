@@ -5,10 +5,12 @@ mobile prototype at [nonsou.github.io/vetiva-ipo-demo](https://nonsou.github.io/
 The flagship offer is the **Dangote Petroleum Refinery & Petrochemicals (DPRP)** IPO — all
 figures, fees, dates and rates are placeholders and are marked `DEMO` in the UI.
 
-The mobile experience was reverse-engineered screen by screen and **redesigned for desktop**
-(split-screen auth, sidebar navigation, dashboard stat cards, a two-column subscription page with
-a sticky order summary) while preserving Vetiva's cream/olive design language, motion vocabulary
-and business rules. See [`docs/`](docs/) for the full product documentation:
+The UI matches the **approved web flow** at
+[nonsou.github.io/vetiva-ipo-demo/web.html](https://nonsou.github.io/vetiva-ipo-demo/web.html)
+(the design source of truth): a white client-portal shell with an image-slider auth card, a
+five-section dashboard (Home / Wallet / Offers / Products / Portfolio), and the single-column
+subscription one-pager with a sticky amount footbar — all in Vetiva's olive design language.
+See [`docs/`](docs/) for the full product documentation:
 
 | Doc                                                                | Contents                                                    |
 | ------------------------------------------------------------------ | ----------------------------------------------------------- |
@@ -36,11 +38,12 @@ pnpm dev          # http://localhost:5173 — MSW serves the API, no backend nee
 
 **Demo tips**
 
-- Landing → _Create new account_ → **Use demo BVN** → _Continue_ → _Send verification code_ →
-  **Autofill code** → any alphanumeric password (e.g. `Demo1234`) → _Finish setup_.
+- "Get started" → _Create new account_ → **Use demo BVN** → _Continue_ → _Send verification
+  code_ → **Autofill code** → any alphanumeric password (e.g. `Demo1234`) → _Finish setup_
+  (lands on **Offers**).
 - On the subscribe page use **Use demo number** for CSCS and any bank + 10-digit account number.
-- The **Demo scenarios** panel (bottom-right, or `Ctrl+.`) jumps between pre-live / live /
-  subscribed states and resets the demo — the desktop version of the prototype's presenter rail.
+- The **☰ Presenter** pill (bottom-right, or `Ctrl+.`) opens the demo panel — journeys, state
+  jumps (pre-live / live / subscribed) and reset, matching the approved flow's presenter rail.
 
 ## Scripts
 

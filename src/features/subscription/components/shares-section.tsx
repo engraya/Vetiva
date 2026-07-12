@@ -6,7 +6,6 @@ import { ngn } from '@/lib/money';
 import { Section } from './section';
 
 interface SharesSectionProps {
-  step?: number;
   title: string;
   value: number;
   floor: number;
@@ -16,7 +15,6 @@ interface SharesSectionProps {
 }
 
 export function SharesSection({
-  step,
   title,
   value,
   floor,
@@ -26,7 +24,6 @@ export function SharesSection({
 }: SharesSectionProps) {
   return (
     <Section
-      step={step}
       icon={<Calculator className="size-[18px]" aria-hidden />}
       title={title}
       description={

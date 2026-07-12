@@ -27,7 +27,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 interface FieldProps {
-  label: string;
+  label: React.ReactNode;
   htmlFor?: string;
   hint?: React.ReactNode;
   error?: string | undefined;

@@ -153,7 +153,7 @@ export function SuccessPage() {
 
         <div className="mt-6 text-center">
           <Button asChild variant="link" size="bare">
-            <Link to="/dashboard">Back to dashboard</Link>
+            <Link to="/dashboard">Done</Link>
           </Button>
         </div>
       </div>
